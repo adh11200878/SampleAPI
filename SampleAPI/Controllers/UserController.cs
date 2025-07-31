@@ -17,54 +17,67 @@ namespace SampleAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAll()
         {
-            ApiResponse apiResponse = new ApiResponse();
             var users = await _userService.GetAllAsync();
-            apiResponse.IsSuccess = true;
-            apiResponse.Message = "";
-            apiResponse.Data = users;
-            return Ok(apiResponse);
+            return Ok(users);
         }
 
         [HttpPost]
         public async Task<IActionResult> GetById(int id)
         {
-            ApiResponse apiResponse = new ApiResponse();
-            if (id == 0)
+            if (id <= 0)
             {
-                apiResponse.IsSuccess = false;
-                apiResponse.Message = "";
-                apiResponse.Data = null;
-                return BadRequest(apiResponse);
+                return BadRequest();
             }
             var users = await _userService.GetByIdAsync(id);
-            apiResponse.IsSuccess = true;
-            apiResponse.Message = "";
-            apiResponse.Data = users;
-            return Ok(apiResponse);
+            return Ok(users);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(UserModel userModel)
         {
-            ApiResponse apiResponse = new ApiResponse();
-
             bool isSuccess = await _userService.CreateAsync(userModel);
             if (isSuccess)
             {
-                apiResponse.IsSuccess = isSuccess;
-                apiResponse.Message = "";
-                apiResponse.Data = userModel;
-                return Ok(apiResponse);
+                return Ok();
             }
             else
             {
-                apiResponse.IsSuccess = isSuccess;
-                apiResponse.Message = "§ó·s¥¢±Ñ";
-                apiResponse.Data = userModel;
-                return Ok(apiResponse);
+                return BadRequest();
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Update(UserModel userModel)
+        {
+            bool isSuccess = await _userService.UpdateAsync(userModel);
+            if (isSuccess)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+
+            bool isSuccess = await _userService.DeleteAsync(id);
+            if (isSuccess)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
 
     }

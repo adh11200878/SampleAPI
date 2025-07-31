@@ -38,12 +38,16 @@ namespace SampleAPI.Service
         }
 
         // C：新增（含交易）
-        public async Task<bool> CreateAsync(UserModel user)
+        public async Task<bool> CreateAsync(UserModel userModel)
         {
             var sql = @"INSERT INTO Users 
                                     (UserName, Email) VALUES 
                                     (@UserName, @Email);";
 
+            if (_db.State != ConnectionState.Open)
+            {
+                _db.Open();
+            }
             using var transaction = _db.BeginTransaction();
             try
             {
@@ -51,8 +55,8 @@ namespace SampleAPI.Service
                 //var rows = await _db.ExecuteAsync(sql, user, transaction); 
                 var parameters = new
                 {
-                    UserName = user.UserName,
-                    Email = user.Email
+                    UserName = userModel.UserName,
+                    Email = userModel.Email
                 };
                 var rows = await _db.ExecuteAsync(sql, parameters, transaction);
                 transaction.Commit();
@@ -66,14 +70,25 @@ namespace SampleAPI.Service
         }
 
         // U：更新（含交易）
-        public async Task<bool> UpdateAsync(UserModel user)
+        public async Task<bool> UpdateAsync(UserModel userModel)
         {
             var sql = @"UPDATE Users SET UserName = @UserName, Email = @Email WHERE Id = @Id";
 
+            if (_db.State != ConnectionState.Open)
+            {
+                _db.Open();
+            }
             using var transaction = _db.BeginTransaction();
             try
             {
-                var rows = await _db.ExecuteAsync(sql, user, transaction);
+                //var rows = await _db.ExecuteAsync(sql, user, transaction);
+                var parameters = new
+                {
+                    Id = userModel.Id,
+                    UserName = userModel.UserName,
+                    Email = userModel.Email
+                };
+                var rows = await _db.ExecuteAsync(sql, parameters, transaction);
                 transaction.Commit();
                 return rows > 0;
             }
@@ -89,6 +104,10 @@ namespace SampleAPI.Service
         {
             var sql = @"DELETE FROM Users WHERE Id = @Id";
 
+            if (_db.State != ConnectionState.Open)
+            {
+                _db.Open();
+            }
             using var transaction = _db.BeginTransaction();
             try
             {
