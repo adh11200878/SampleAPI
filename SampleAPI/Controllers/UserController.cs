@@ -21,7 +21,7 @@ namespace SampleAPI.Controllers
             var users = await _userService.GetAllAsync();
             apiResponse.IsSuccess = true;
             apiResponse.Message = "";
-            apiResponse.Data = null;
+            apiResponse.Data = users;
             return Ok(apiResponse);
         }
 
