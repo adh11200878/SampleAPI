@@ -11,6 +11,7 @@ namespace SampleAPI.Extension
         {
             // 註冊 JWT Helper(使用AddSingleton)因為都使共用 這樣效能較佳
             services.AddSingleton<JwtHelper>();
+            services.AddSingleton<FileUploadHelper>();
 
             var sw = Stopwatch.StartNew();
             // 業務邏輯層（Service）

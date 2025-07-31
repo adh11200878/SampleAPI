@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using SampleAPI.Helper;
 using SampleAPI.Models;
 using SampleAPI.Service;
 
@@ -9,11 +11,13 @@ namespace SampleAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
-        public UserController(UserService userService)
+        private readonly FileUploadHelper _fileUploadHelper;
+        public UserController(UserService userService, FileUploadHelper fileUploadHelper)
         {
             _userService = userService;
+            _fileUploadHelper = fileUploadHelper;
         }
-         
+
         [HttpPost]
         public async Task<IActionResult> GetAll()
         {
@@ -35,14 +39,23 @@ namespace SampleAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(UserModel userModel)
         {
-            bool isSuccess = await _userService.CreateAsync(userModel);
-            if (isSuccess)
+            var result = await _fileUploadHelper.UploadFileAsync(userModel.File);
+
+            if (result.isSuccess)
             {
-                return Ok();
+                bool isSuccess = await _userService.CreateAsync(userModel);
+                if (isSuccess)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             else
             {
-                return BadRequest();
+                return Ok(result.message);
             }
         }
 
