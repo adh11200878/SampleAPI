@@ -55,7 +55,7 @@ namespace SampleAPI.Controllers
             }
             else
             {
-                return Ok(result.message);
+                return BadRequest(result.message);
             }
         }
 
